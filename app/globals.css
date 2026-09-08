@@ -91,24 +91,7 @@ button { color: inherit; }
 .new-chat-plus { font-size: 21px; line-height: 1; font-weight: 350; }
 .sidebar-collapsed .new-chat-button { justify-content: center; padding: 0; }
 
-.history { display: flex; flex: 1; flex-direction: column; gap: 3px; min-width: 220px; }
-.history-label { margin: 5px 10px 6px; color: #8a908d; font-size: 11px; font-weight: 650; text-transform: uppercase; letter-spacing: .08em; }
-.history button {
-  width: 100%;
-  padding: 9px 10px;
-  overflow: hidden;
-  text-align: left;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  cursor: pointer;
-  color: #525854;
-  font-size: 13px;
-}
-.history button:hover, .history button.history-active { background: #e7e9e8; color: var(--ink); }
-.sidebar-footer { display: flex; align-items: center; gap: 9px; min-width: 220px; padding: 8px 10px 0; color: #7a817d; font-size: 12px; }
+.sidebar-footer { display: flex; align-items: center; gap: 9px; min-width: 220px; margin-top: auto; padding: 8px 10px 0; color: #7a817d; font-size: 12px; }
 .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #5f9e7d; }
 
 .main-panel { position: relative; display: flex; flex: 1; flex-direction: column; min-width: 0; height: 100%; }
@@ -263,8 +246,7 @@ button { color: inherit; }
   .mobile-only { display: grid; }
   .sidebar { position: fixed; inset: 0 auto 0 0; width: min(84vw, 290px); transform: translateX(-105%); transition: transform 180ms ease; box-shadow: 12px 0 36px rgba(20, 28, 24, .12); }
   .sidebar.sidebar-collapsed { width: min(84vw, 290px); padding: 20px 14px 16px; }
-  .sidebar.sidebar-collapsed .brand-name, .sidebar.sidebar-collapsed .history, .sidebar.sidebar-collapsed .sidebar-footer, .sidebar.sidebar-collapsed .new-chat-button span:last-child { display: initial; }
-  .sidebar.sidebar-collapsed .history { display: flex; }
+  .sidebar.sidebar-collapsed .brand-name, .sidebar.sidebar-collapsed .sidebar-footer, .sidebar.sidebar-collapsed .new-chat-button span:last-child { display: initial; }
   .sidebar.sidebar-collapsed .sidebar-footer { display: flex; }
   .sidebar.sidebar-collapsed .new-chat-button { justify-content: flex-start; padding: 0 13px; }
   .sidebar-mobile-open { transform: translateX(0); }

@@ -26,13 +26,6 @@ type Message = {
   error?: boolean;
 };
 
-const mockHistory = [
-  "Equity valuation question",
-  "Duration vs. convexity",
-  "Ethics: material nonpublic info",
-  "Deferred tax liabilities",
-];
-
 const SUPPORTED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const MAX_TOTAL_IMAGE_BYTES = 20 * 1024 * 1024;
@@ -70,8 +63,10 @@ export function CfaTutor() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const requestInFlightRef = useRef(false);
   const requestControllerRef = useRef<AbortController | null>(null);
+  const conversationEpochRef = useRef(0);
 
   const addFiles = async (files: FileList | File[]) => {
+    const conversationEpoch = conversationEpochRef.current;
     const selectedFiles = Array.from(files);
     const unsupportedFile = selectedFiles.find((file) => !SUPPORTED_IMAGE_TYPES.has(file.type));
     const oversizedFile = selectedFiles.find((file) => file.size > MAX_IMAGE_BYTES);
@@ -99,9 +94,11 @@ export function CfaTutor() {
 
     try {
       const nextImages = await Promise.all(selectedFiles.map(fileToImage));
+      if (conversationEpochRef.current !== conversationEpoch) return;
       setImages((current) => [...current, ...nextImages]);
       setAttachmentError("");
     } catch {
+      if (conversationEpochRef.current !== conversationEpoch) return;
       setAttachmentError("图片读取失败，请重新选择。");
     }
   };
@@ -119,6 +116,7 @@ export function CfaTutor() {
   const sendMessage = async () => {
     const cleanText = text.trim();
     if ((!cleanText && !images.length) || requestInFlightRef.current) return;
+    const conversationEpoch = conversationEpochRef.current;
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
@@ -168,12 +166,18 @@ export function CfaTutor() {
         throw new Error(result.error || "CFA Tutor 暂时无法回答，请稍后重试。");
       }
 
+      if (conversationEpochRef.current !== conversationEpoch) return;
       setMessages((current) => [
         ...current,
         { id: crypto.randomUUID(), role: "assistant", text: result.message },
       ]);
     } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") return;
+      if (
+        conversationEpochRef.current !== conversationEpoch ||
+        (error instanceof DOMException && error.name === "AbortError")
+      ) {
+        return;
+      }
 
       setMessages((current) => [
         ...current,
@@ -195,16 +199,24 @@ export function CfaTutor() {
   };
 
   const startNewChat = () => {
-    requestControllerRef.current?.abort();
+    conversationEpochRef.current += 1;
+    const activeController = requestControllerRef.current;
     requestControllerRef.current = null;
     requestInFlightRef.current = false;
+    activeController?.abort();
     setMessages([]);
     setText("");
     setImages([]);
     setAttachmentError("");
     setIsThinking(false);
+    setIsDragging(false);
     setMobileSidebarOpen(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     resetTextarea();
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollTo({ top: 0 });
+      textareaRef.current?.focus();
+    });
   };
 
   const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -278,20 +290,9 @@ export function CfaTutor() {
           {!sidebarCollapsed && <span>New Chat</span>}
         </button>
 
-        {!sidebarCollapsed && (
-          <nav className="history" aria-label="Conversation history">
-            <p className="history-label">Recent</p>
-            {mockHistory.map((item, index) => (
-              <button key={item} className={index === 0 ? "history-active" : ""}>
-                {item}
-              </button>
-            ))}
-          </nav>
-        )}
-
         <div className="sidebar-footer">
           <div className="status-dot" />
-          {!sidebarCollapsed && <span>Local workspace</span>}
+          {!sidebarCollapsed && <span>CFA Tutor · 2026 Level I</span>}
         </div>
       </aside>
 
