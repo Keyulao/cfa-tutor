@@ -1,6 +1,6 @@
 # CFA Tutor
 
-CFA Tutor is a personal, AI-powered study assistant for reviewing CFA questions and concepts. It provides Chinese-first explanations while retaining the English terminology used on the CFA exam.
+CFA Tutor is a personal, AI-powered study assistant for reviewing CFA questions and concepts. It provides clear English explanations using the terminology found on the CFA exam.
 
 ## Features
 
@@ -8,7 +8,7 @@ CFA Tutor is a personal, AI-powered study assistant for reviewing CFA questions 
 - OpenAI Responses API
 - Multimodal screenshot and question understanding
 - OpenAI File Search and Vector Store curriculum retrieval
-- Chinese-first CFA tutoring with important English terminology
+- English CFA tutoring using standard exam terminology
 - Markdown, tables, and KaTeX formula rendering
 - Browser-session multi-turn context
 
